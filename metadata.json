@@ -1,0 +1,7 @@
+{
+  "name": "Topíssima Estética",
+  "description": "Plataforma completa de agendamento e consultoria estética inteligente para a clínica Topíssima Estética, integrando IA para recomendações personalizadas.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

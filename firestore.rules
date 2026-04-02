@@ -1,0 +1,213 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: settings/businessInfo
+    // Fields: name, ownerName, address, phone, email, adminPassword, etc.
+    //
+    // Collection: services
+    // Fields: id, name, description, duration, price, category, images, status
+    //
+    // Collection: users
+    // Fields: id, name, email, phone, role, isProfileComplete, patientType, anamnesis
+    //
+    // Collection: appointments
+    // Fields: id, serviceId, userId, date, time, status, price
+    //
+    // Collection: coupons
+    // Fields: id, code, discount, type, isActive
+    //
+    // Collection: transactions
+    // Fields: id, type, category, value, description, date, paymentMethod, status
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (request.auth.token.email == "lanjc0245@gmail.com" ||
+         request.auth.token.email == "jclanhouse2012@hotmail.com.br" ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+         (exists(/databases/$(database)/documents/settings/businessInfo) && request.auth.token.email == get(/databases/$(database)/documents/settings/businessInfo).data.email));
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasRequiredFields(['id', 'name', 'email', 'role']) &&
+             hasOnlyAllowedFields(['id', 'name', 'email', 'phone', 'secondaryPhone', 'birthDate', 'role', 'isProfileComplete', 'patientType', 'registrationSource', 'anamnesis', 'cpf', 'favoriteRecommendations', 'address']) &&
+             data.id is string && data.name is string && data.name.size() > 0 &&
+             isValidEmail(data.email) &&
+             data.role in ['admin', 'client'] &&
+             (!('phone' in data) || data.phone is string) &&
+             (!('secondaryPhone' in data) || data.secondaryPhone is string) &&
+             (!('birthDate' in data) || data.birthDate is string) &&
+             (!('isProfileComplete' in data) || data.isProfileComplete is bool) &&
+             (!('patientType' in data) || data.patientType in ['especial', 'topissima']) &&
+             (!('registrationSource' in data) || data.registrationSource is string) &&
+             (!('anamnesis' in data) || data.anamnesis is map) &&
+             (!('cpf' in data) || data.cpf is string) &&
+             (!('favoriteRecommendations' in data) || data.favoriteRecommendations is list) &&
+             (!('address' in data) || data.address is map);
+    }
+
+    function isValidService(data) {
+      return hasRequiredFields(['id', 'name', 'price', 'status']) &&
+             hasOnlyAllowedFields(['id', 'name', 'description', 'duration', 'price', 'originalPrice', 'category', 'images', 'status', 'isKit']) &&
+             data.id is string && data.name is string && data.price is number &&
+             data.status in ['active', 'paused', 'disabled', 'suspended'] &&
+             (!('description' in data) || data.description is string) &&
+             (!('duration' in data) || data.duration is number) &&
+             (!('originalPrice' in data) || data.originalPrice is number) &&
+             (!('category' in data) || data.category in ['facial', 'corporal', 'injetaveis', 'laser']) &&
+             (!('images' in data) || data.images is list) &&
+             (!('isKit' in data) || data.isKit is bool);
+    }
+
+    function isValidAppointment(data) {
+      return hasRequiredFields(['id', 'serviceId', 'userId', 'date', 'time', 'status']) &&
+             hasOnlyAllowedFields(['id', 'serviceId', 'serviceName', 'userId', 'userName', 'date', 'time', 'status', 'price', 'couponUsed']) &&
+             data.id is string && data.serviceId is string && data.userId is string &&
+             data.date is string && data.time is string &&
+             data.status in ['confirmed', 'pending', 'cancelled'] &&
+             (!('serviceName' in data) || data.serviceName is string) &&
+             (!('userName' in data) || data.userName is string) &&
+             (!('price' in data) || data.price is number) &&
+             (!('couponUsed' in data) || data.couponUsed is string);
+    }
+
+    function isValidTransaction(data) {
+      return hasRequiredFields(['id', 'type', 'category', 'value', 'description', 'date', 'paymentMethod', 'status', 'responsible', 'createdAt']) &&
+             data.id is string && data.type in ['entry', 'exit'] && data.value is number &&
+             data.status in ['paid', 'partial', 'pending'];
+    }
+
+    function isValidCashierSession(data) {
+      return hasRequiredFields(['id', 'openedAt', 'initialBalance', 'status', 'responsible']) &&
+             data.id is string && data.status in ['open', 'closed'];
+    }
+
+    function isValidOccupation(data) {
+      return hasRequiredFields(['id', 'name']) &&
+             data.id is string && data.name is string && data.name.size() > 0;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    // Settings / Business Info
+    match /settings/businessInfo {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Services
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidService(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Users
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && 
+                    ((request.auth.uid == userId && request.resource.data.role == 'client') || 
+                     (request.auth.uid == userId && exists(/databases/$(database)/documents/settings/businessInfo) && request.auth.token.email == get(/databases/$(database)/documents/settings/businessInfo).data.email && request.resource.data.role == 'admin') ||
+                     isAdmin());
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) && 
+                    ((isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Appointments
+    match /appointments/{appointmentId} {
+      // Allow read for authenticated users to check availability (counting)
+      // NOTE: This exposes appointment details to all authenticated users.
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidAppointment(request.resource.data) && 
+                    (request.auth.uid == request.resource.data.userId || isAdmin());
+      allow update: if isAuthenticated() && isValidAppointment(request.resource.data) && 
+                    (request.auth.uid == resource.data.userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Coupons
+    match /coupons/{couponId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Transactions
+    match /transactions/{transactionId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin() && isValidTransaction(request.resource.data);
+    }
+
+    // Payment Methods
+    match /payment_methods/{methodId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Cashier Sessions
+    match /cashier_sessions/{sessionId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() && isValidCashierSession(request.resource.data);
+    }
+
+    // Occupations
+    match /occupations/{occupationId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidOccupation(request.resource.data);
+      allow write: if isAdmin();
+    }
+
+    // Carousel Items
+    match /carouselItems/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Work Videos
+    match /workVideos/{videoId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

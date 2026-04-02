@@ -1,0 +1,219 @@
+{
+  "entities": {
+    "BusinessInfo": {
+      "title": "BusinessInfo",
+      "description": "Informações gerais da clínica e configurações visuais.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "adminPassword": { "type": "string" },
+        "openingHours": { "type": "string" },
+        "googleMapsUrl": { "type": "string" },
+        "description": { "type": "string" },
+        "footerNote": { "type": "string" },
+        "headerWelcome": { "type": "string" },
+        "primaryColor": { "type": "string" },
+        "headingColor": { "type": "string" },
+        "bodyTextColor": { "type": "string" },
+        "navTextColor": { "type": "string" },
+        "footerTextColor": { "type": "string" },
+        "heroSubtitleColor": { "type": "string" },
+        "aboutContent": { "type": "string" },
+        "legalContent": { "type": "string" },
+        "isAiChatEnabled": { "type": "boolean" },
+        "isCouponsEnabled": { "type": "boolean" }
+      }
+    },
+    "Service": {
+      "title": "Service",
+      "description": "Serviços oferecidos pela clínica.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "duration": { "type": "integer" },
+        "price": { "type": "number" },
+        "originalPrice": { "type": "number" },
+        "category": { "type": "string", "enum": ["facial", "corporal", "injetaveis", "laser"] },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["active", "paused", "disabled", "suspended"] }
+      },
+      "required": ["id", "name", "price", "status"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Dados dos usuários (clientes e admins).",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "client"] },
+        "isProfileComplete": { "type": "boolean" },
+        "patientType": { "type": "string", "enum": ["especial", "topissima"] },
+        "registrationSource": { "type": "string" },
+        "anamnesis": { "type": "object" },
+        "cpf": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Agendamentos de serviços.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "serviceId": { "type": "string" },
+        "serviceName": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "status": { "type": "string", "enum": ["confirmed", "pending", "cancelled"] },
+        "price": { "type": "number" },
+        "couponUsed": { "type": "string" }
+      },
+      "required": ["id", "serviceId", "userId", "date", "time", "status"]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "Cupons de desconto.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "discount": { "type": "number" },
+        "type": { "type": "string", "enum": ["percent", "fixed"] },
+        "isActive": { "type": "boolean" }
+      },
+      "required": ["id", "code", "discount", "type", "isActive"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Transações financeiras do caixa.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["entry", "exit"] },
+        "category": { "type": "string" },
+        "value": { "type": "number" },
+        "description": { "type": "string" },
+        "date": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "status": { "type": "string", "enum": ["paid", "partial", "pending"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "type", "value", "date", "status"]
+    },
+    "CarouselItem": {
+      "title": "CarouselItem",
+      "description": "Item do carrossel da página inicial.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "linkUrl": { "type": "string" }
+      },
+      "required": ["id", "imageUrl", "linkUrl"]
+    },
+    "WorkVideo": {
+      "title": "WorkVideo",
+      "description": "Vídeo da seção Nosso Trabalho.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "url": { "type": "string" },
+        "title": { "type": "string" }
+      },
+      "required": ["id", "url"]
+    },
+    "Occupation": {
+      "title": "Occupation",
+      "description": "Lista de ocupações para o prontuário.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["id", "name"]
+    },
+    "CashierSession": {
+      "title": "CashierSession",
+      "description": "Sessões de abertura e fechamento de caixa.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "openedAt": { "type": "string" },
+        "closedAt": { "type": "string" },
+        "initialBalance": { "type": "number" },
+        "finalBalance": { "type": "number" },
+        "status": { "type": "string", "enum": ["open", "closed"] },
+        "responsible": { "type": "string" }
+      },
+      "required": ["id", "openedAt", "initialBalance", "status", "responsible"]
+    },
+    "PaymentMethod": {
+      "title": "PaymentMethod",
+      "description": "Métodos de pagamento aceitos.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "isActive": { "type": "boolean" }
+      },
+      "required": ["id", "name", "isActive"]
+    }
+  },
+  "firestore": {
+    "settings/businessInfo": {
+      "schema": "BusinessInfo",
+      "description": "Configurações globais da clínica."
+    },
+    "services/{serviceId}": {
+      "schema": "Service",
+      "description": "Catálogo de serviços."
+    },
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Perfis de usuários."
+    },
+    "appointments/{appointmentId}": {
+      "schema": "Appointment",
+      "description": "Lista de agendamentos."
+    },
+    "coupons/{couponId}": {
+      "schema": "Coupon",
+      "description": "Cupons promocionais."
+    },
+    "transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Movimentações do caixa."
+    },
+    "carouselItems/{itemId}": {
+      "schema": "CarouselItem",
+      "description": "Itens do carrossel da home."
+    },
+    "workVideos/{videoId}": {
+      "schema": "WorkVideo",
+      "description": "Vídeos da seção Nosso Trabalho."
+    },
+    "occupations/{occupationId}": {
+      "schema": "Occupation",
+      "description": "Lista de ocupações."
+    },
+    "cashier_sessions/{sessionId}": {
+      "schema": "CashierSession",
+      "description": "Sessões do caixa."
+    },
+    "payment_methods/{methodId}": {
+      "schema": "PaymentMethod",
+      "description": "Métodos de pagamento."
+    }
+  }
+}
