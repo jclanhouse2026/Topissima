@@ -59,7 +59,9 @@ export const DEFAULT_BUSINESS_INFO: BusinessInfo = {
     instagram: 'https://instagram.com/topissimaestetica',
     whatsapp: 'https://wa.me/5563981385081',
     facebook: 'https://facebook.com/topissimaestetica',
-    youtube: 'https://youtube.com/topissimaestetica'
+    youtube: 'https://youtube.com/topissimaestetica',
+    tiktok: '',
+    kwai: ''
   },
   isAiChatEnabled: true,
   isCouponsEnabled: true,

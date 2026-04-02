@@ -830,6 +830,13 @@ const App: React.FC = () => {
       <footer className="footer-area py-24" style={{ backgroundColor: '#1c1917' }}>
         <div className="max-w-7xl mx-auto px-4 text-center">
              <h3 className="text-4xl font-bold uppercase tracking-[0.2em] mb-4" style={{ color: 'var(--footer-text-color)' }}>{businessInfo.name}</h3>
+             <div className="flex justify-center gap-8 mb-10">
+                {Object.entries(businessInfo.socialLinks).map(([key, url]) => url && (
+                  <a key={key} href={url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-black uppercase tracking-[0.3em] hover:text-amber-400 transition-all" style={{ color: 'var(--footer-text-color)' }}>
+                    {key}
+                  </a>
+                ))}
+             </div>
              <p className="text-[10px] font-bold uppercase tracking-widest mt-10 opacity-60" style={{ color: 'var(--footer-text-color)' }}>{businessInfo.footerNote}</p>
         </div>
       </footer>

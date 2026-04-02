@@ -744,7 +744,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ services, businessInfo, carou
             { id: 'sobre', label: 'Pag. Sobre', icon: '🏢' },
             { id: 'legal', label: 'Pag. Legal', icon: '⚖️' },
             { id: 'configurações', label: 'Acesso', icon: '🔐' },
-            { id: 'personalização', label: 'Personalizar', icon: '🎨' }
+            { id: 'personalização', label: 'Configurações & Design', icon: '🎨' }
           ].map(tab => (
             <button 
               key={tab.id} 
@@ -1379,14 +1379,77 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ services, businessInfo, carou
           </div>
         )}
 
-        {/* PERSONALIZAÇÃO VISUAL */}
+        {/* PERSONALIZAÇÃO VISUAL & CONFIGURAÇÕES */}
         {viewMode === 'personalização' && (
           <div className="space-y-12 animate-fade-in">
              <div className="flex justify-between items-center bg-white p-8 rounded-[2rem] shadow-sm border border-stone-100">
-                <h3 className="text-xl font-black uppercase tracking-tighter text-stone-800">Design do Sistema</h3>
+                <h3 className="text-xl font-black uppercase tracking-tighter text-stone-800">Configurações & Identidade Visual</h3>
                 <button onClick={handleResetColors} className="px-6 py-3 bg-red-50 text-red-500 border border-red-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">
                   Resetar para Padrão de Fábrica
                 </button>
+             </div>
+
+             <div className="bg-white p-12 rounded-[4rem] shadow-2xl border border-stone-100 space-y-12">
+                <h3 className="text-2xl font-black uppercase text-stone-800 tracking-tighter border-b border-stone-50 pb-6">Informações da Empresa</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                   <div className="space-y-2">
+                      <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">Nome da Clínica</label>
+                      <input 
+                        className="w-full p-4 bg-stone-50 border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                        value={businessInfo.name || ''} 
+                        onChange={e => onUpdateBusinessInfo({...businessInfo, name: e.target.value})} 
+                      />
+                   </div>
+                   <div className="space-y-2">
+                      <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">Nome da Doutora/Proprietária</label>
+                      <input 
+                        className="w-full p-4 bg-stone-50 border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                        value={businessInfo.ownerName || ''} 
+                        onChange={e => onUpdateBusinessInfo({...businessInfo, ownerName: e.target.value})} 
+                      />
+                   </div>
+                   <div className="space-y-2 md:col-span-2">
+                      <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">Endereço Completo</label>
+                      <input 
+                        className="w-full p-4 bg-stone-50 border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                        value={businessInfo.address || ''} 
+                        onChange={e => onUpdateBusinessInfo({...businessInfo, address: e.target.value})} 
+                      />
+                   </div>
+                   <div className="space-y-2">
+                      <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">Telefone de Contato</label>
+                      <input 
+                        className="w-full p-4 bg-stone-50 border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                        value={businessInfo.phone || ''} 
+                        onChange={e => onUpdateBusinessInfo({...businessInfo, phone: e.target.value})} 
+                      />
+                   </div>
+                   <div className="space-y-2">
+                      <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">E-mail de Contato</label>
+                      <input 
+                        className="w-full p-4 bg-stone-50 border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                        value={businessInfo.email || ''} 
+                        onChange={e => onUpdateBusinessInfo({...businessInfo, email: e.target.value})} 
+                      />
+                   </div>
+                   <div className="space-y-2 md:col-span-2">
+                      <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">Google Maps Embed URL</label>
+                      <input 
+                        className="w-full p-4 bg-stone-50 border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                        value={businessInfo.googleMapsUrl || ''} 
+                        onChange={e => onUpdateBusinessInfo({...businessInfo, googleMapsUrl: e.target.value})} 
+                        placeholder="https://www.google.com/maps/embed?..."
+                      />
+                   </div>
+                   <div className="space-y-2 md:col-span-2">
+                      <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">Descrição da Clínica (Hero)</label>
+                      <textarea 
+                        className="w-full p-4 bg-stone-50 border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm h-32" 
+                        value={businessInfo.description || ''} 
+                        onChange={e => onUpdateBusinessInfo({...businessInfo, description: e.target.value})} 
+                      />
+                   </div>
+                </div>
              </div>
 
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -1471,6 +1534,66 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ services, businessInfo, carou
                                  <span className="text-[9px] font-bold text-stone-400 uppercase tracking-widest block">Botão Cancelar</span>
                                  <span className="font-mono text-xs font-bold text-stone-800 uppercase">{businessInfo.btnCancelColor}</span>
                               </div>
+                           </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-8 border-t border-stone-50">
+                        <label className="text-[10px] font-black uppercase text-stone-400 block mb-6 tracking-[0.4em]">Redes Sociais & Contato</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-stone-50 p-8 rounded-[2.5rem] border border-stone-100">
+                           <div className="space-y-2">
+                              <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">WhatsApp (Link ou Número)</label>
+                              <input 
+                                className="w-full p-4 bg-white border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                                value={businessInfo.socialLinks?.whatsapp || ''} 
+                                onChange={e => onUpdateBusinessInfo({...businessInfo, socialLinks: {...businessInfo.socialLinks, whatsapp: e.target.value}})} 
+                                placeholder="https://wa.me/55..."
+                              />
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">Instagram (Link)</label>
+                              <input 
+                                className="w-full p-4 bg-white border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                                value={businessInfo.socialLinks?.instagram || ''} 
+                                onChange={e => onUpdateBusinessInfo({...businessInfo, socialLinks: {...businessInfo.socialLinks, instagram: e.target.value}})} 
+                                placeholder="https://instagram.com/..."
+                              />
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">Facebook (Link)</label>
+                              <input 
+                                className="w-full p-4 bg-white border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                                value={businessInfo.socialLinks?.facebook || ''} 
+                                onChange={e => onUpdateBusinessInfo({...businessInfo, socialLinks: {...businessInfo.socialLinks, facebook: e.target.value}})} 
+                                placeholder="https://facebook.com/..."
+                              />
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">YouTube (Link)</label>
+                              <input 
+                                className="w-full p-4 bg-white border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                                value={businessInfo.socialLinks?.youtube || ''} 
+                                onChange={e => onUpdateBusinessInfo({...businessInfo, socialLinks: {...businessInfo.socialLinks, youtube: e.target.value}})} 
+                                placeholder="https://youtube.com/..."
+                              />
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">TikTok (Link)</label>
+                              <input 
+                                className="w-full p-4 bg-white border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                                value={businessInfo.socialLinks?.tiktok || ''} 
+                                onChange={e => onUpdateBusinessInfo({...businessInfo, socialLinks: {...businessInfo.socialLinks, tiktok: e.target.value}})} 
+                                placeholder="https://tiktok.com/@..."
+                              />
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-[9px] font-bold uppercase text-stone-400 block ml-2">Kwai (Link)</label>
+                              <input 
+                                className="w-full p-4 bg-white border border-stone-100 rounded-2xl text-xs font-bold outline-none shadow-sm" 
+                                value={businessInfo.socialLinks?.kwai || ''} 
+                                onChange={e => onUpdateBusinessInfo({...businessInfo, socialLinks: {...businessInfo.socialLinks, kwai: e.target.value}})} 
+                                placeholder="https://kwai.com/..."
+                              />
                            </div>
                         </div>
                       </div>

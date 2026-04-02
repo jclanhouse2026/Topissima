@@ -4,6 +4,8 @@ export interface SocialLinks {
   whatsapp: string;
   facebook: string;
   youtube: string;
+  tiktok?: string;
+  kwai?: string;
 }
 
 export interface CarouselItem {
